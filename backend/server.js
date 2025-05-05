@@ -27,7 +27,7 @@ mongoose.connect(process.env.MONGODB_URI)
 // ⚙️ Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static("C:/Users/varsh/college/Software eng/MU_IntranetPortal"));
+app.use(express.static(path.join(__dirname, '../frontend')));
 
 // 🔐 JWT Middleware
 const authenticate = (req, res, next) => {
