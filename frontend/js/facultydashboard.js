@@ -36,7 +36,7 @@
     const tbody = document.getElementById("faculty-schedule");
   
     try {
-      const res = await fetch("http://localhost:5000/api/faculty/schedule/today", {
+      const res = await fetch("https://intranet-portal.onrender.com/api/faculty/schedule/today", {
         headers: {
           Authorization: "Bearer " + token
         }

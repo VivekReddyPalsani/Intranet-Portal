@@ -31,7 +31,7 @@ function logout() {
 // 📝 Fetch and render tasks
 async function fetchTasks() {
   try {
-    const res = await fetch("http://localhost:5000/api/tasks", {
+    const res = await fetch("https://intranet-portal.onrender.com/api/tasks", {
       headers: {
         Authorization: `Bearer ${token}`
       }
