@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>MU - Live Chat</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand bg-secondary navbar-dark px-4 py-2 justify-content-between">
+        <h5 class="text-white m-0">Live Chat</h5>
+        <div class="d-flex align-items-center">
+            <button class="btn btn-outline-light me-3" id="backToDashboardBtn">Back to Dashboard</button>
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
+                    <img src="img/user.jpg" alt="Profile" width="40" height="40" class="rounded-circle me-2">
+                    <span id="navbarUserName">Loading...</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end bg-secondary border-0">
+                    <li><a class="dropdown-item" href="#">My Profile</a></li>
+                    <li><a class="dropdown-item" href="#">Settings</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="logout()">Log Out</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Live Chat Interface -->
+    <div class="container-fluid pt-4 px-4">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-9 bg-secondary rounded d-flex p-0" style="min-height: 75vh;">
+                <!-- Contact List -->
+                <div class="col-md-4 border-end p-3" style="overflow-y: auto;">
+                    <div class="bg-dark p-3 mb-3 rounded text-center">
+                        <h6 class="mb-0 text-light">Chats</h6>
+                    </div>
+                    <input type="text" class="form-control bg-dark border-0 mb-3" placeholder="Search contacts..." id="contactSearch">
+                    <div class="contact-list" id="contactList">
+                        <!-- Dynamic Contacts Go Here -->
+                    </div>
+                </div>
+
+                <!-- Chat Area -->
+                <div class="col-md-8 d-flex flex-column p-3">
+                    <div class="bg-dark p-3 mb-3 rounded d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 text-light chat-header-contact">Select a contact</h6>
+                        <div>
+                            <a href="#" class="text-light me-3"><i class="fas fa-video"></i></a>
+                            <a href="#" class="text-light me-3"><i class="fas fa-phone"></i></a>
+                            <a href="#" class="text-light"><i class="fas fa-ellipsis-v"></i></a>
+                        </div>
+                    </div>
+                    <div class="chat-messages flex-grow-1 p-3" style="overflow-y: auto; background: var(--dark);">
+                        <!-- Messages appear here -->
+                    </div>
+                    <div class="chat-input p-3 border-top d-flex align-items-center">
+                        <input type="text" class="form-control bg-dark border-0 me-2" placeholder="Type a message..." id="messageInput">
+                        <button class="btn btn-primary">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer -->
+    <div class="container-fluid px-4 pt-4">
+        <div class="bg-secondary rounded-top p-4 text-center">
+            © <a href="#">Mahindra University</a>, All Rights Reserved.
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+
+    <!-- Live Chat Logic -->
+    <script>
+        $(document).ready(function () {
+            $('.contact').on('click', function () {
+                $('.chat-header-contact').text($(this).find('h6').text());
+                $('.chat-messages').html(`
+                    <div class="message received mb-3 p-2 rounded" style="background: var(--secondary); max-width: 60%;">
+                        <p class="mb-0 text-light">Hey John, are you ready for the project discussion?</p>
+                        <small class="text-light">10:15 AM</small>
+                    </div>
+                    <div class="message sent mb-3 p-2 rounded" style="background: var(--primary); max-width: 60%; margin-left: auto;">
+                        <p class="mb-0 text-light">Yes, I’ll be there! Let’s meet at 11 AM.</p>
+                        <small class="text-light">10:16 AM</small>
+                    </div>
+                `);
+            });
+
+            $('#messageInput').on('keypress', function (e) {
+                if (e.which === 13) {
+                    const message = $(this).val();
+                    if (message.trim()) {
+                        $('.chat-messages').append(`
+                            <div class="message sent mb-3 p-2 rounded" style="background: var(--primary); max-width: 60%; margin-left: auto;">
+                                <p class="mb-0 text-light">${message}</p>
+                                <small class="text-light">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
+                            </div>
+                        `);
+                        $(this).val('');
+                        $('.chat-messages').scrollTop($('.chat-messages')[0].scrollHeight);
+                    }
+                }
+            });
+
+            $('.chat-input button').on('click', function () {
+                const message = $('#messageInput').val();
+                if (message.trim()) {
+                    $('.chat-messages').append(`
+                        <div class="message sent mb-3 p-2 rounded" style="background: var(--primary); max-width: 60%; margin-left: auto;">
+                            <p class="mb-0 text-light">${message}</p>
+                            <small class="text-light">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>
+                        </div>
+                    `);
+                    $('#messageInput').val('');
+                    $('.chat-messages').scrollTop($('.chat-messages')[0].scrollHeight);
+                }
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (user) {
+                document.getElementById("navbarUserName").textContent = user.name || "User";
+                document.getElementById("backToDashboardBtn").addEventListener("click", () => {
+                    if (user.role === "student") {
+                        window.location.href = "index.html";
+                    } else if (user.role === "faculty") {
+                        window.location.href = "faculty.html";
+                    }
+                });
+            }
+        });
+    </script>
+<!-- Live Chat Logic -->
+<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+<script>
+    const socket = io('http://localhost:5000'); // adjust if needed
+    let currentUser = null;
+    let currentReceiverId = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        currentUser = JSON.parse(localStorage.getItem("user"));
+        if (!currentUser) return;
+
+        document.getElementById("navbarUserName").textContent = currentUser.name;
+
+        // Set dashboard redirection
+        document.getElementById("backToDashboardBtn")?.addEventListener("click", () => {
+            const target = currentUser.role === "faculty" ? "faculty.html" : "index.html";
+            window.location.href = target;
+        });
+
+        socket.emit("join", currentUser.id);
+
+        loadContacts();
+    });
+
+        async function loadContacts() {
+        try {
+            const res = await fetch("/api/chat/contacts", {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`
+                }
+            });
+
+            if (!res.ok) throw new Error(`Failed to fetch contacts: ${res.statusText}`);
+            const users = await res.json();
+
+            const contactList = document.getElementById("contactList");
+            contactList.innerHTML = '';
+
+            users.forEach(user => {
+                const div = document.createElement("div");
+                div.className = "contact d-flex align-items-center p-3 border-bottom";
+                div.style.cursor = "pointer";
+                div.dataset.userId = user._id;
+                div.dataset.name = user.name;
+
+                div.innerHTML = `
+                    <img src="img/user.jpg" alt="${user.name}" class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                    <div>
+                        <h6 class="mb-0 text-light">${user.name} (ID: ${user._id})</h6>
+                        <small class="text-light">${user.role}</small>
+                    </div>
+                `;
+
+                div.addEventListener("click", () => handleContactClick(user));
+                contactList.appendChild(div);
+            });
+
+        } catch (err) {
+            console.error("❌ Contact Load Error:", err);
+        }
+    }
+
+
+    async function handleContactClick(user) {
+        currentReceiverId = user._id;
+        document.querySelector('.chat-header-contact').textContent = `${user.name} (ID: ${user._id})`;
+        document.querySelector('.chat-messages').innerHTML = '';
+
+        const response = await fetch(`/api/messages/${currentUser.id}/${currentReceiverId}`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+        });
+
+        const messages = await response.json();
+
+        messages.forEach(msg => {
+            const isSelf = msg.senderId === currentUser.id;
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message mb-3 p-2 rounded ${isSelf ? 'sent' : 'received'}`;
+            messageDiv.style.cssText = `
+                background: var(--${isSelf ? 'primary' : 'secondary'});
+                max-width: 60%;
+                ${isSelf ? 'margin-left:auto;' : ''}
+            `;
+            messageDiv.innerHTML = `<p class="mb-0 text-light">${msg.content}</p>
+                <small class="text-light">${new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>`;
+            document.querySelector('.chat-messages').appendChild(messageDiv);
+        });
+
+        document.querySelector('.chat-messages').scrollTop = document.querySelector('.chat-messages').scrollHeight;
+    }
+
+    function sendMessage() {
+        const input = document.getElementById("messageInput");
+        const message = input.value.trim();
+        if (!message || !currentReceiverId) return;
+
+        socket.emit("private_message", {
+            senderId: currentUser.id,
+            receiverId: currentReceiverId,
+            content: message
+        });
+
+        appendMessage(message, true);
+        input.value = '';
+    }
+
+    function appendMessage(content, isSelf) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message mb-3 p-2 rounded ${isSelf ? 'sent' : 'received'}`;
+        messageDiv.style.cssText = `
+            background: var(--${isSelf ? 'primary' : 'secondary'});
+            max-width: 60%;
+            ${isSelf ? 'margin-left:auto;' : ''}
+        `;
+        messageDiv.innerHTML = `<p class="mb-0 text-light">${content}</p>
+            <small class="text-light">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</small>`;
+        document.querySelector('.chat-messages').appendChild(messageDiv);
+        document.querySelector('.chat-messages').scrollTop = document.querySelector('.chat-messages').scrollHeight;
+    }
+
+    document.getElementById("messageInput").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") sendMessage();
+    });
+
+    document.querySelector(".chat-input button").addEventListener("click", sendMessage);
+
+    socket.on("private_message", (msg) => {
+        if (msg.senderId === currentReceiverId) {
+            appendMessage(msg.content, false);
+        }
+    });
+</script>
+
+    
+
+</body>
+
+</html>
