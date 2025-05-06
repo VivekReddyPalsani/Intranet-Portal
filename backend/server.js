@@ -35,7 +35,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, '../frontend')));
 
 // 🔐 JWT Middleware
-const authenticateToken = (req, res, next) => {
+const authenticate = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
