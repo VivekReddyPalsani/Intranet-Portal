@@ -4,13 +4,14 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+require('dotenv').config();
 
 const User = require('./models/User');
 const Task = require('./models/Task');
 const Schedule = require('./models/Schedule');
 const app = express();
 const PORT = 5000;
-const SECRET_KEY = 'mu_secret_key_123'; // ✅ Move to .env in production
+const SECRET_KEY = process.env.JWT_SECRET || 'fallback_secret_key_for_dev';
 const CourseRegistration = require('./models/CourseRegistration');
 const FeeInfo = require('./models/FeeInfo');
 const FacultySchedule = require('./models/FacultySchedule');
