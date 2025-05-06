@@ -10,7 +10,7 @@ const Task = require('./models/Task');
 const Schedule = require('./models/Schedule');
 const app = express();
 const PORT = 5000;
-const SECRET_KEY = process.env.JWT_SECRET || 'default_secret_key'; // Use .env for production secrets
+const SECRET_KEY = 'mu_secret_key_123'; // ✅ Move to .env in production
 const CourseRegistration = require('./models/CourseRegistration');
 const FeeInfo = require('./models/FeeInfo');
 const FacultySchedule = require('./models/FacultySchedule');
@@ -86,17 +86,23 @@ app.post('/api/signup', async (req, res) => {
   }
 });
 
-
 // 🔑 Signin
 app.post('/api/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    // Find user by email
     const user = await User.findOne({ email }).lean();
     if (!user || !(await bcrypt.compare(password, user.password)))
       return res.status(401).json({ message: 'Invalid email or password' });
 
+    // Generate JWT token
     const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, SECRET_KEY, { expiresIn: '2h' });
+
+    // Redirect user based on their role
     const redirectTo = user.role === 'faculty' ? 'faculty.html' : 'index.html';
+
+    // Respond with the token and user data
     res.status(200).json({
       message: 'Signin successful',
       token,
@@ -105,17 +111,20 @@ app.post('/api/login', async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        studentInfo: user.studentInfo || {} // ✅ this line very important
+        studentInfo: user.studentInfo || {} // Attach any additional data like student info
       },
-      redirectTo
+      redirectTo // Redirect based on role
     });
-        
+
   } catch (err) {
     console.error('🔥 Signin error:', err);
     res.status(500).json({ message: 'Signin failed.' });
   }
 });
-app.use('/api', authenticate)
+
+// 🔐 Authentication Middleware
+app.use('/api', authenticate);  // Apply the authenticate middleware for all routes starting with /api
+
 
 // 👤 Profile
 app.get('/api/profile', authenticate, async (req, res) => {
